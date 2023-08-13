@@ -12,19 +12,20 @@ export async function addVillager(req, res) {
 
         // check for existing details
         let error = {};
-        let i = 0;
-        while (members[i]) {
-            const existNIC = await VillagerModel.findOne({ nic: members[i].nic });
-            const existContact = await VillagerModel.findOne({ contact: members[i].contact });
+        // let i = 0;
+        // while (members[i]) {
+        //     const existNIC = await VillagerModel.find({ "members.nic": "123456" } );
+        //     const existContact = await VillagerModel.findOne({ contact: members[i].contact });
             
-            if (existNIC) {
-                error.nic = [i, "Please use unique NIC"];
-            }
-            if (existContact) {
-                error.contact = [i, "Please use unique Contact Number"];
-            }
-            i++;
-        }
+        //     if (existNIC) {
+        //         return res.status(500).send({ nic: members[i].nic });
+        //         error.nic = [i, "Please use unique NIC"];
+        //     }
+        //     if (existContact) {
+        //         error.contact = [i, "Please use unique Contact Number"];
+        //     }
+        //     i++;
+        // }
         
         if (
             !(Object.keys(error).length === 0 && error.constructor === Object)
