@@ -7,7 +7,7 @@ import otpGenerator from "otp-generator";
 /** middleware for verify user */
 export async function verifyUser(req, res, next) {
     try {
-        const { username } = req.method == "GET" ? req.query : req.body;
+        const { username } = ((req.method == "GET") || (req.method == "DELETE")) ? req.query : req.body;
 
         // check the user existence
         const exist = await UserModel.findOne({ email: username });
@@ -28,23 +28,73 @@ export async function verifyUser(req, res, next) {
   }
 */
 export async function register(req, res) {
-    try {
-        const { name, email, password } = req.body;
 
+    const { role, password, email, contact, nic } = req.body;
+
+    
+    try {
         // check for existing email
         const existEmail = await UserModel.findOne({ email });
-        if (existEmail) {
-            return res.status(500).send({ error: "Please use unique Email" });
+        const existNIC = await UserModel.findOne({ nic });
+        const existContact = await UserModel.findOne({ contact });
+        let error = {};
+        if (existEmail) {error.email = "Please use unique Email";}
+        if (existNIC) {error.nic = "Please use unique NIC";}
+        if (existContact) {error.contact = "Please use unique Contact Number";}
+        if (!(Object.keys(error).length === 0 && error.constructor === Object)) {
+            return res.status(500).send({ error });
         } else {
             if (password) {
                 bcrypt
-                    .hash(password, 8)
-                    .then((hashedPassword) => {
-                        const user = new UserModel({
+                .hash(password, 8)
+                .then((hashedPassword) => {
+                    let user;
+                    if (role === "GN") {
+                        const {
                             name,
+                            address,
+                            role,
+                            gsDivision,
+                            divisionNumber,
+                        } = req.body;
+                        user = new UserModel({
+                            name,
+                            address,
+                            nic,
+                            contact,
                             email,
+                            role,
+                            gsDivision,
+                            divisionNumber,
                             password: hashedPassword,
                         });
+                    } else if (role === "ORG") {
+                        const {
+                            name,
+                            gsDivision,
+                            divisionNumber,
+                            boardName,
+                            boardAddress,
+                            boardPhone,
+                            boardEmail,
+                        } = req.body;
+                        user = new UserModel({
+                          name,
+                          email,
+                          gsDivision,
+                          divisionNumber,
+                          contact,
+                          boardName,
+                          boardAddress,
+                          nic,
+                          boardPhone,
+                          boardEmail,
+                          role,
+                          password: hashedPassword,
+                        });
+                    }
+                    // return res.status(500).send(user);
+                        
 
                         // return save result as a response
                         user.save()
@@ -54,7 +104,7 @@ export async function register(req, res) {
                                     .send({ msg: "Register Successfully" })
                             )
                             .catch((error) =>
-                                res.status(500).send({ error })
+                                res.status(500).send({ error:"vcfggy" })
                             );
                     })
                     .catch((error) => {
@@ -96,6 +146,7 @@ export async function login(req, res) {
                                 userId: user._id,
                                 name: user.name,
                                 username: user.email,
+                                role: user.role,
                             },
                             ENV.JWT_SECRET,
                             { expiresIn: "24h" }
@@ -104,6 +155,7 @@ export async function login(req, res) {
                         return res.status(200).send({
                             msg: "Login Successfully...!",
                             username: user.email,
+                            role: user.role,
                             token,
                         });
                     })
@@ -121,7 +173,8 @@ export async function login(req, res) {
     }
 }
 
-/** GET: http://localhost:4040/api/user/:username */
+/** GET: http://localhost:4040/api/user/:id */
+/** GET: http://localhost:4040/api/getUser/:username */
 export async function getUser(req, res) {
     let _id = "";
     let email = "";
@@ -154,6 +207,36 @@ export async function getUser(req, res) {
     }
 }
 
+/** GET: http://localhost:4040/api/getUsers/:role */
+export async function getUsers(req, res) {
+    let userRole = req.params.role;
+    try {
+        if (!userRole) return res.status(404).send({ error: "Invalid URL" });
+        
+        try {
+            let users = await UserModel.find({ role: userRole });;
+            // return res.status(201).send(users);
+
+            if (!users)
+                return res.status(501).send({ error: "Cannot find users data" });
+
+            /** remove password from users */
+            // mongoose return unnecessary data with object so convert it into json
+            let data = [];
+            users.forEach(user => {
+                const { password, ...rest } = Object.assign({}, user.toJSON());
+                data.push(rest);
+            });
+
+            return res.status(201).send(data);
+        } catch (error) {
+            return res.status(500).send({ error });
+        }
+    } catch (error) {
+        return res.status(501).send({ error: "Cannot find users data" });
+    }
+}
+
 /** PUT: http://localhost:4040/api/updateuser */
 export async function updateUser(req, res) {
     try {
@@ -165,7 +248,7 @@ export async function updateUser(req, res) {
                 if (!updateOk) {
                     return res.status(501).send({ error: "Cannot update user data" });
                 }
-                return res.status(201).send("Update Successfully!");
+                return res.status(201).send({ msg: "Update Successfully" });
             } catch (error) {
                 return res.status(500).send({ error });
             }
@@ -174,6 +257,22 @@ export async function updateUser(req, res) {
         }
     } catch (error) {
         return res.status(401).send({ error });
+    }
+}
+
+/** DELETE: http://localhost:4040/api/deletedata/:id */
+export async function deleteData(req, res) {
+    let id = req.params.id;
+    try {
+        const deleteOk = await UserModel.findByIdAndDelete(id);
+        if (!deleteOk) {
+            return res
+                .status(501)
+                .send({ error: "Cannot delete user data" });
+        }
+        return res.status(201).send({ msg: "Delete Successfully" });
+    } catch (error) {
+        return res.status(500).send({ error });
     }
 }
 
