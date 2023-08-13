@@ -8,7 +8,9 @@ export default async function Auth(req, res, next) {
 
         // retrive the user details of the logged user
         const decodedToken = await Jwt.verify(token, ENV.JWT_SECRET);
-        req.user = decodedToken;
+        
+        const id = req.body.id ? req.body.id : "";
+        id ? req.user = {userId : id} : req.user = decodedToken;
         next();
     } catch (error) {
         res.status(401).send({error: "Authentication Failed!"})
