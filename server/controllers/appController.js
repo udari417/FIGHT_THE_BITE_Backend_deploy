@@ -28,10 +28,11 @@ export async function verifyUser(req, res, next) {
   }
 */
 export async function register(req, res) {
+
+    const { role, password, email, contact, nic } = req.body;
+
+    
     try {
-
-        const { name, address, nic, contact, email, role, gsDivision, divisionNumber, password } = req.body;
-
         // check for existing email
         const existEmail = await UserModel.findOne({ email });
         const existNIC = await UserModel.findOne({ nic });
@@ -45,9 +46,18 @@ export async function register(req, res) {
         } else {
             if (password) {
                 bcrypt
-                    .hash(password, 8)
-                    .then((hashedPassword) => {
-                        const user = new UserModel({
+                .hash(password, 8)
+                .then((hashedPassword) => {
+                    let user;
+                    if (role === "GN") {
+                        const {
+                            name,
+                            address,
+                            role,
+                            gsDivision,
+                            divisionNumber,
+                        } = req.body;
+                        user = new UserModel({
                             name,
                             address,
                             nic,
@@ -58,6 +68,33 @@ export async function register(req, res) {
                             divisionNumber,
                             password: hashedPassword,
                         });
+                    } else if (role === "ORG") {
+                        const {
+                            name,
+                            gsDivision,
+                            divisionNumber,
+                            boardName,
+                            boardAddress,
+                            boardPhone,
+                            boardEmail,
+                        } = req.body;
+                        user = new UserModel({
+                          name,
+                          email,
+                          gsDivision,
+                          divisionNumber,
+                          contact,
+                          boardName,
+                          boardAddress,
+                          nic,
+                          boardPhone,
+                          boardEmail,
+                          role,
+                          password: hashedPassword,
+                        });
+                    }
+                    // return res.status(500).send(user);
+                        
 
                         // return save result as a response
                         user.save()
@@ -67,7 +104,7 @@ export async function register(req, res) {
                                     .send({ msg: "Register Successfully" })
                             )
                             .catch((error) =>
-                                res.status(500).send({ error })
+                                res.status(500).send({ error:"vcfggy" })
                             );
                     })
                     .catch((error) => {
