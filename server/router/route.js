@@ -4,6 +4,7 @@ const router = Router();
 
 /** import all controllers */
 import * as controller from "../controllers/appController.js";
+import * as villagerController from "../controllers/villagersController.js";
 import { registerMail } from "../controllers/mailerController.js";
 import Auth, { localVariables } from "../middleware/Auth.js";
 
@@ -12,6 +13,7 @@ router.route('/register').post(controller.register); // register user
 router.route("/registermail").post(registerMail); // send the email
 router.route('/authenticate').post(controller.verifyUser, (req, res) => res.end()); // authenticate user
 router.route('/login').post(controller.verifyUser, controller.login); // login in to the app
+router.route('/addfammily').post(villagerController.addVillager); // add fammily details
 
 // ========= GET Methods ==============
 router.route('/user/:id').get(controller.getUser); // user with userID
