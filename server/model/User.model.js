@@ -44,11 +44,14 @@ export const UserSchema = new mongoose.Schema({
   },
   boardEmail: {
     type: String,
-    unique: [true, "Feild Exist"],
+    // unique: [true, "Feild Exist"],
   },
   password: {
     type: String,
   },
+  image : {
+    type : String,    
+  }
 });
 
 export default mongoose.model.Users || mongoose.model('User', UserSchema);

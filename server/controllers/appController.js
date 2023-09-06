@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import ENV from "../config.js";
 import otpGenerator from "otp-generator";
+import VillagerModel  from "../model/Vllager.model.js";
 
 /** middleware for verify user */
 export async function verifyUser(req, res, next) {
@@ -29,7 +30,8 @@ export async function verifyUser(req, res, next) {
 */
 export async function register(req, res) {
 
-    const { role, password, email, contact, nic } = req.body;
+    const { role, password, email, contact, nic} = req.body;
+    // console.log(req.body);
 
     
     try {
@@ -47,7 +49,7 @@ export async function register(req, res) {
             if (password) {
                 bcrypt
                 .hash(password, 8)
-                .then((hashedPassword) => {
+                .then(async (hashedPassword) => {
                     let user;
                     if (role === "GN") {
                         const {
@@ -57,7 +59,8 @@ export async function register(req, res) {
                             gsDivision,
                             divisionNumber,
                         } = req.body;
-                        user = new UserModel({
+                        console.log(req.body);
+                        user =  new UserModel({
                             name,
                             address,
                             nic,
@@ -68,6 +71,7 @@ export async function register(req, res) {
                             divisionNumber,
                             password: hashedPassword,
                         });
+
                     } else if (role === "ORG") {
                         const {
                             name,
@@ -77,7 +81,11 @@ export async function register(req, res) {
                             boardAddress,
                             boardPhone,
                             boardEmail,
+                            image
                         } = req.body;
+                        image
+                          ? image
+                          : "https://img.freepik.com/free-vector/corporate-meeting-employees-cartoon-characters-discussing-business-strategy-planning-further-actions-brainstorming-formal-communication-seminar-concept-illustration_335657-2035.jpg?w=740&t=st=1693746333~exp=1693746933~hmac=1a28786bb8bb7349dc65d62f7fb3dd8580339ed226dacc49927304fa9125c73c";
                         user = new UserModel({
                           name,
                           email,
@@ -92,13 +100,43 @@ export async function register(req, res) {
                           role,
                           password: hashedPassword,
                         });
+                        
+                    }else if(role === "Villager"){
+                        console.log(nic)
+                        // const result = await validatenic()
+                        // console.log(result)
+                        const existuser = await UserModel.findOne({nic})
+                        if(existuser){
+                            res.status(404).send({type : "error" , message : "User Already Exists"})
+                        }else{
+                            const existnic = await VillagerModel.findOne({nic})
+                            if(existnic){
+                                const{name} = req.body;
+                                user = await new UserModel({
+                                    name,
+                                    address : existnic.address,
+                                    nic,
+                                    contact,
+                                    email,
+                                    role,
+                                    gsDivision : existnic.gsDivision,
+                                    divisionNumber : existnic.divisionNumber,
+                                    password,
+                                })
+                            }else{
+                                res.json({type : "error" , message : "We Cannot See any NIC Matches with Your NIC. Please Meet Your Grama Niladhari"})
+                            }
+                        }
+                    }else if(role === "Guest"){
+                        const{} = req.body
                     }
                     // return res.status(500).send(user);
                         
 
                         // return save result as a response
-                        user.save()
-                            .then((result) =>
+                        const respond =  await user.save()
+                        console.log(respond)
+                             user.save().then((result) =>
                                 res
                                     .status(201)
                                     .send({ msg: "Register Successfully" })
@@ -157,6 +195,7 @@ export async function login(req, res) {
                             username: user.email,
                             role: user.role,
                             token,
+                            type : "success"
                         });
                     })
                     .catch((error) => {
@@ -176,9 +215,11 @@ export async function login(req, res) {
 /** GET: http://localhost:4040/api/user/:id */
 /** GET: http://localhost:4040/api/getUser/:username */
 export async function getUser(req, res) {
+    // console.log("Hi")
     let _id = "";
     let email = "";
     req.params.id ? (_id = req.params.id) : (email = req.params.username);
+    // console.log(email)
 
     try {
         if (!_id && !email) return res.status(404).send({ error: "Invalid userID or username" });
@@ -189,6 +230,7 @@ export async function getUser(req, res) {
                 user = await UserModel.findOne({ _id });
             } else {
                 user = await UserModel.findOne({ email });
+                console.log(user)
             }
 
             if (!user)
@@ -333,4 +375,170 @@ export async function resetPassword(req, res) {
     } catch (error) {
         return res.status(401).send({ error });
     }
+}
+
+export async function generateOTPMobile(req, res) {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const existuser = await user.findOne({ email });
+    console.log(existuser);
+    if (existuser) {
+      console.log("User Exist");
+      const token = jwt.sign({ email: email }, process.env.JWTSECRET, {
+        expiresIn: "15m",
+      });
+      console.log(token);
+      console.log(token);
+      var generateotp = otpgenerate.generate(4, {
+        digits: true,
+        lowerCaseAlphabets: false,
+        specialChars: false,
+        upperCaseAlphabets: false,
+      });
+      // var salt = await bcrypt.genSalt(10)
+      // generateotp = bcrypt.hash(generateotp,5)
+      // generateotp = await hashpassword(generateotp);
+      var generateotps = bcrypt.hashSync(generateotp);
+      console.log(generateotps);
+      const role = existuser.role;
+      console.log(role);
+      const userdetails = await getroledeatils(role, existuser.email);
+      console.log(userdetails);
+      const otps = await new OTP({
+        otp: generateotps,
+        email: existuser.email,
+        token: token,
+      });
+      await otps.save();
+
+      const smsresponse = await smssender(
+        userdetails.mobile,
+        "Dear " +
+          userdetails.name.toUpperCase() +
+          ",\\n" +
+          "Your OTP for Reset Password Process is " +
+          "\\n" +
+          generateotp +
+          "\\n" +
+          "This OTP is Only Valid for 15 minutes." +
+          "\\n" +
+          "\\n" +
+          "Thank You." +
+          "\\n" +
+          "Fight The Bites Team"
+      );
+
+      console.log(smsresponse.status);
+      // await smssender()
+      // console.log(smsresponse.data)
+      // var smsresponses.status = 200;
+      //  var smsresponses = 200;
+      if (smsresponse.status == 200) {
+        // console.log("hello");
+        // console.log(userdetails.name);
+        var emailing = {
+          body: {
+            name: userdetails.name.toUpperCase(),
+            greeting: "Dear",
+            signature: "Yours Sincerely",
+            intro: "Your Reset Passaword OTP is " + generateotp,
+            outro: "You can contact us anytime",
+          },
+        };
+        var bodyemail = mailgenerate.generate(emailing);
+        let message = {
+          from: "onlinesite1998@gmail.com",
+          to: email,
+          subject: "Reset Password",
+          html: bodyemail,
+        };
+        transport.sendMail(message).catch((err) => console.log(err));
+        console.log("hello");
+        res.json({
+          type: "success",
+          user: email,
+          message: "OTP SENT",
+          token: token,
+        });
+      } else {
+        console.log("error");
+        res.json({ type: "error", message: smsresponse.data });
+      }
+    } else {
+      console.log("User ");
+      res.json({ type: "error", message: "Invalid Email" });
+    }
+  } catch (error) {
+    res.json({ type: "error", message: error });
+  }
+};
+
+export async function verifyotpMobile (req, res) {
+  const { email, otp } = req.body;
+  // console.log(req.email.email)
+  if (req.email.email === email) {
+    const uservalidation = await OTP.find({ email });
+    // console.log(email)
+    if (uservalidation.length > 0) {
+      var uservalidations = await uservalidation[uservalidation.length - 1];
+      console.log(uservalidations.otp);
+      if (bcrypt.compareSync(otp, uservalidations.otp)) {
+        //  console.log(uservalidations);
+        uservalidations.verified = true;
+        // console.log(uservalidations.token);
+        // console.log(req.headers.authorization.split(" ")[1]);
+        // const token = req.headers.authorization.split(" ")[1];
+        // console.log(token === uservalidations.token)
+        uservalidations.save();
+        // console.log(uservalidation);
+        res.json({ type: "success", message: "OTP Verified" });
+      } else {
+        // console.log('hi');
+        res.json({ type: "error", message: "Invalid OTP" });
+      }
+    } else {
+      // console.log("hello");
+      res.json({ type: "error", message: "Invalid User" });
+    }
+  } else {
+    res.json({ type: "error", message: "Invalid User" });
+  }
+};
+
+export async function validatenic(req,res){
+    const {nic} = req.body
+    // var gonext = false
+    try {
+      const existnic = await VillagerModel.findOne({ houseHolderNIC: nic });
+      if (existnic) {
+        const existuser = UserModel.findOne({ nic });
+        if (existuser) {
+          //  next();
+        //   gonext = true;
+          res.status(200).json({
+            message: "NIC VALIDATED SUCCESSFULLY",
+            type: "success",
+          });
+          return true;
+        } else {
+          // next();
+          res
+            .status(404)
+            .json({ type: "error", message: "User Already Exists" });
+          // next();
+        }
+      } else {
+        res.status(404).json({ message: "We Cannot See any NIC Matches with Your NIC. Please Meet Your Grama Niladhari or If You are a Guest to the village Please Register as a Guest User.", type: "error" });
+      }
+    //   if (gonext) {
+    //     next();
+    //   }
+      // next();
+    } catch (error) {
+        res.status(404).send(error)
+    }
+    
+    
+
 }
