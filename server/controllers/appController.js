@@ -28,9 +28,8 @@ export async function verifyUser(req, res, next) {
   }
 */
 export async function register(req, res) {
-
+    
     const { role, password, email, contact, nic } = req.body;
-
     
     try {
         // check for existing email
@@ -91,6 +90,23 @@ export async function register(req, res) {
                           boardEmail,
                           role,
                           password: hashedPassword,
+                        });
+                    }else if (role === "DR") {
+                        
+                        const {
+                            registrationNumber,
+                            name,
+                            wardNo,
+                        } = req.body;
+                        user = new UserModel({
+                            registrationNumber,
+                            name,
+                            email,
+                            contact,
+                            wardNo,
+                            role,
+                            nic,
+                            password: hashedPassword,
                         });
                     }
                     // return res.status(500).send(user);
