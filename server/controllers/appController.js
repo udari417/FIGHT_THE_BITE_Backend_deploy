@@ -97,6 +97,7 @@ export async function register(req, res) {
                             registrationNumber,
                             name,
                             wardNo,
+                            divisionNumber,
                         } = req.body;
                         user = new UserModel({
                             registrationNumber,
@@ -106,9 +107,28 @@ export async function register(req, res) {
                             wardNo,
                             role,
                             nic,
+                            divisionNumber,
+                            password: hashedPassword,
+                        });
+                    }else if (role === "NR") {
+                        
+                        const {
+                            registrationNumber,
+                            name,
+                            
+                        } = req.body;
+                        user = new UserModel({
+                            registrationNumber,
+                            name,
+                            email,
+                            contact,
+                            role,
+                            nic,
                             password: hashedPassword,
                         });
                     }
+
+
                     // return res.status(500).send(user);
                         
 
