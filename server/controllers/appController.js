@@ -195,7 +195,8 @@ export async function login(req, res) {
                             username: user.email,
                             role: user.role,
                             token,
-                            type : "success"
+                            type : "success",
+                            name : user.name,
                         });
                     })
                     .catch((error) => {
