@@ -8,6 +8,7 @@ import * as villagerController from "../controllers/villagersController.js";
 import { registerMail } from "../controllers/mailerController.js";
 import Auth, { localVariables } from "../middleware/Auth.js";
 import * as organizationcontroller from "../controllers/organizationController.js"
+import * as Guestcontroller from "../controllers/guestVillagerController.js"
 // import nicValidator from "../middleware/nicValidator.js";
 // import ValidateNIC from "../middleware/nicValidator.js";
 // import * as validity from "../middleware/nicValidator.js"
@@ -20,17 +21,19 @@ router.route("/registermail").post(registerMail); // send the email
 router.route('/authenticate').post(controller.verifyUser, (req, res) => res.end()); // authenticate user
 router.route('/login').post(controller.verifyUser, controller.login); // login in to the app
 router.route('/addfammily').post(villagerController.addVillager); // add fammily details
-router.route('/villager/register').post(controller.validatenic,controller.register);
+// router.route('/villager/register').post(controller.validatenic,controller.register);
 router.route('/organization/campaign/create').post(organizationcontroller.createcampaign);
 router.route('/organization/campaigns').post(organizationcontroller.getOrganizationCampaigns);
-// router.route('/validatenic').post(ValidateNIC);
+router.route('/guest/register').post(Guestcontroller.GuestRegister);
+router.route('/validatenic').get(controller.validateNIC);
 
 // ========= GET Methods ==============
 router.route('/user/:id').get(controller.getUser); // user with userID
-router.route('/getUser/:username').get(controller.getUser); // user with username
-router.route('/getUsers/:role').get(controller.getUsers); // users with role
+router.route('/getUsers').post(controller.getUsers); // user with username
+// router.route('/getUsers/:role').get(controller.getUsers); // users with role
 router.route("/generateOTP").get(controller.verifyUser, localVariables, controller.generateOTP); // generate random OTP
 router.route("/getFammily/123AS").get()
+router.route("/villager/:email").get(villagerController.getvillager)
 // router.route("/generateOTPMobile").post(controller.generateOTPMobile);
 // router.route("/verifyotpmobile").post(controller);
 // router.route(""
@@ -43,5 +46,6 @@ router.route('/resetPassword').put(controller.verifyUser, controller.resetPasswo
 
 // ========= Delete Meyhods ===========
 router.route('/deletedata/:id').delete(controller.verifyUser, controller.deleteData); // data with dataID
+
 
 export default router;

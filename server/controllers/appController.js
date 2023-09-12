@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import ENV from "../config.js";
 import otpGenerator from "otp-generator";
 import VillagerModel  from "../model/Vllager.model.js";
+import GuestModel from "../model/Guest.model.js";
 
 /** middleware for verify user */
 export async function verifyUser(req, res, next) {
@@ -30,18 +31,18 @@ export async function verifyUser(req, res, next) {
 */
 export async function register(req, res) {
 
-    const { role, password, email, contact, nic} = req.body;
-    // console.log(req.body);
+    const { role, password,contact, email,} = req.body;
+    console.log(req.body);
 
     
     try {
         // check for existing email
         const existEmail = await UserModel.findOne({ email });
-        const existNIC = await UserModel.findOne({ nic });
+        // const existNIC = await UserModel.findOne({ nic });
         const existContact = await UserModel.findOne({ contact });
         let error = {};
         if (existEmail) {error.email = "Please use unique Email";}
-        if (existNIC) {error.nic = "Please use unique NIC";}
+        // if (existNIC) {error.nic = "Please use unique NIC";}
         if (existContact) {error.contact = "Please use unique Contact Number";}
         if (!(Object.keys(error).length === 0 && error.constructor === Object)) {
             return res.status(500).send({ error });
@@ -50,6 +51,7 @@ export async function register(req, res) {
                 bcrypt
                 .hash(password, 8)
                 .then(async (hashedPassword) => {
+                    console.log(hashedPassword);
                     let user;
                     if (role === "GN") {
                         const {
@@ -128,7 +130,28 @@ export async function register(req, res) {
                             }
                         }
                     }else if(role === "Guest"){
-                        const{} = req.body
+
+                        const{members,newgsDivision,oldgsDivision,GuestVillager,address} = req.body
+                        // console.log(req.body)
+                        const existemail = await UserModel.findOne({"email" : GuestVillager.email})
+                        // console.log(existemail);
+                        if(!existemail){
+                            console.log("HI")
+                            user =  new GuestModel({
+                                email,
+                                address,
+                                GuestVillager,
+                                members,
+                                newgsDivision,
+                                oldgsDivision,
+                                password : hashedPassword,
+                                newdivisionnumber,
+                                contact
+
+                            });
+                            console.log(user);
+                        }
+                        
                     }
                     // return res.status(500).send(user);
                         
@@ -195,7 +218,8 @@ export async function login(req, res) {
                             username: user.email,
                             role: user.role,
                             token,
-                            type : "success"
+                            type : "success",
+                            name : user.name
                         });
                     })
                     .catch((error) => {
@@ -215,11 +239,10 @@ export async function login(req, res) {
 /** GET: http://localhost:4040/api/user/:id */
 /** GET: http://localhost:4040/api/getUser/:username */
 export async function getUser(req, res) {
-    // console.log("Hi")
     let _id = "";
     let email = "";
     req.params.id ? (_id = req.params.id) : (email = req.params.username);
-    // console.log(email)
+    console.log(email);
 
     try {
         if (!_id && !email) return res.status(404).send({ error: "Invalid userID or username" });
@@ -228,6 +251,7 @@ export async function getUser(req, res) {
             let user = "";
             if (_id) {
                 user = await UserModel.findOne({ _id });
+                console.log(user);
             } else {
                 user = await UserModel.findOne({ email });
                 console.log(user)
@@ -251,32 +275,43 @@ export async function getUser(req, res) {
 
 /** GET: http://localhost:4040/api/getUsers/:role */
 export async function getUsers(req, res) {
-    let userRole = req.params.role;
-    try {
-        if (!userRole) return res.status(404).send({ error: "Invalid URL" });
+    const{nic} = req.body;
+    console.log(nic);
+    const users = await VillagerModel.find({
+	members: {
+		$elemMatch: {
+	nic: nic
+}
+}
+})
+
+    console.log(users);
+    // let userRole = req.params.role;
+    // try {
+    //     if (!userRole) return res.status(404).send({ error: "Invalid URL" });
         
-        try {
-            let users = await UserModel.find({ role: userRole });;
-            // return res.status(201).send(users);
+    //     try {
+    //         let users = await UserModel.find({ role: userRole });;
+    //         // return res.status(201).send(users);
 
-            if (!users)
-                return res.status(501).send({ error: "Cannot find users data" });
+    //         if (!users)
+    //             return res.status(501).send({ error: "Cannot find users data" });
 
-            /** remove password from users */
-            // mongoose return unnecessary data with object so convert it into json
-            let data = [];
-            users.forEach(user => {
-                const { password, ...rest } = Object.assign({}, user.toJSON());
-                data.push(rest);
-            });
+    //         /** remove password from users */
+    //         // mongoose return unnecessary data with object so convert it into json
+    //         let data = [];
+    //         users.forEach(user => {
+    //             const { password, ...rest } = Object.assign({}, user.toJSON());
+    //             data.push(rest);
+    //         });
 
-            return res.status(201).send(data);
-        } catch (error) {
-            return res.status(500).send({ error });
-        }
-    } catch (error) {
-        return res.status(501).send({ error: "Cannot find users data" });
-    }
+    //         return res.status(201).send(data);
+    //     } catch (error) {
+    //         return res.status(500).send({ error });
+    //     }
+    // } catch (error) {
+    //     return res.status(501).send({ error: "Cannot find users data" });
+    // }
 }
 
 /** PUT: http://localhost:4040/api/updateuser */
@@ -506,39 +541,45 @@ export async function verifyotpMobile (req, res) {
   }
 };
 
-export async function validatenic(req,res){
-    const {nic} = req.body
-    // var gonext = false
-    try {
-      const existnic = await VillagerModel.findOne({ houseHolderNIC: nic });
-      if (existnic) {
-        const existuser = UserModel.findOne({ nic });
-        if (existuser) {
-          //  next();
-        //   gonext = true;
-          res.status(200).json({
-            message: "NIC VALIDATED SUCCESSFULLY",
-            type: "success",
-          });
-          return true;
-        } else {
-          // next();
-          res
-            .status(404)
-            .json({ type: "error", message: "User Already Exists" });
-          // next();
-        }
-      } else {
-        res.status(404).json({ message: "We Cannot See any NIC Matches with Your NIC. Please Meet Your Grama Niladhari or If You are a Guest to the village Please Register as a Guest User.", type: "error" });
-      }
-    //   if (gonext) {
-    //     next();
-    //   }
-      // next();
-    } catch (error) {
-        res.status(404).send(error)
-    }
-    
-    
 
+export async function validateNIC(req, res) {
+    //   let nic = req.params.nic;
+    const nic = "200001415251";
+      try {
+        try {
+          let users = await VillagerModel.find({
+            members: {
+              $elemMatch: {
+                nic,
+              },
+            },
+          });
+          console.log(users);
+          if (!users) {
+            return res.status(501).send({ error: "Cannot find user data" });
+          } else {
+            let members = users[0].members;
+            console.log(members);
+            // console.log(members)
+            members.forEach((element) => {
+              if (element.nic) {
+                // console.log("IN")
+                if (element.nic === nic) {
+                 res.status(201).send(element);
+                }
+              }
+            });
+            // console.log(members)
+          }
+
+          return res.status(201).send("jkl");
+        } catch (error) {
+          res.status(500).send({ error });
+        }
+      } catch (error) {
+        res.status(501).send({ error: "Cannot find user data" });
+      }
 }
+
+
+// export async function get

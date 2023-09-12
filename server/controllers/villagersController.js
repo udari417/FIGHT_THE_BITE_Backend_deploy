@@ -1,3 +1,4 @@
+import UserModel from "../model/User.model.js";
 import VillagerModel from "../model/Vllager.model.js";
 
 export async function addVillager(req, res) {
@@ -49,4 +50,22 @@ export async function addVillager(req, res) {
   } catch (error) {
     return res.status(500).send({ error: "aiyooo" });
   }
+}
+
+export async function getvillager(req,res){
+  var email = req.params.email;
+
+  console.log(req.params.email)
+  try {
+    const user = await UserModel.findOne({email},"-password");
+    // console.log(user)
+    if(user){
+      res.status(200).json({user})
+    }else{
+      res.status(404).send({message : "User Not Found!"})
+    }
+  } catch (error) {
+    res.status(404).json({error});
+  }
+
 }
