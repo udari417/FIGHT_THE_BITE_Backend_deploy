@@ -9,6 +9,9 @@ import { registerMail } from "../controllers/mailerController.js";
 import Auth, { localVariables } from "../middleware/Auth.js";
 import * as organizationcontroller from "../controllers/organizationController.js"
 import * as Guestcontroller from "../controllers/guestVillagerController.js"
+// import * as patientcontroller from "../controllers/patientController.js";
+import * as patientcontroller from "../controllers/patientController.js";
+import * as phicontroller from "../controllers/phiController.js";
 // import nicValidator from "../middleware/nicValidator.js";
 // import ValidateNIC from "../middleware/nicValidator.js";
 // import * as validity from "../middleware/nicValidator.js"
@@ -24,9 +27,11 @@ router.route('/addfammily').post(villagerController.addVillager); // add fammily
 // router.route('/villager/register').post(controller.validatenic,controller.register);
 router.route('/organization/campaign/create').post(organizationcontroller.createcampaign);
 router.route('/organization/campaigns').post(organizationcontroller.getOrganizationCampaigns);
-router.route('/guest/register').post(Guestcontroller.GuestRegister);
-router.route('/validatenic').get(controller.validateNIC);
-
+router.route('/patient/addpatient').post(patientcontroller.addPatients);
+router.route('/patient/getPatientcount').post(patientcontroller.getCountPatients);
+router.route('/phi/getdivition').post(phicontroller.getDivisions);
+// router.route('/validatenic').get(villagerController.getvillager);
+router.route("/getVillages/:nic").get(villagerController.getVillagers);
 // ========= GET Methods ==============
 router.route('/user/:id').get(controller.getUser); // user with userID
 router.route('/getUsers').post(controller.getUsers); // user with username

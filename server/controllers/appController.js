@@ -544,7 +544,7 @@ export async function verifyotpMobile (req, res) {
 
 export async function validateNIC(req, res) {
     //   let nic = req.params.nic;
-    const nic = "200001415251";
+    const nic = "473102457V";
       try {
         try {
           let users = await VillagerModel.find({
@@ -559,7 +559,7 @@ export async function validateNIC(req, res) {
             return res.status(501).send({ error: "Cannot find user data" });
           } else {
             let members = users[0].members;
-            console.log(members);
+            // console.log(members);
             // console.log(members)
             members.forEach((element) => {
               if (element.nic) {
