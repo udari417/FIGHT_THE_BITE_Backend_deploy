@@ -4,9 +4,11 @@ import morgan from "morgan";
 
 import router from "./router/route.js";
 import connect from "./database/conn.js";
+import dotenv from "dotenv";
 
 const app = express();
 
+dotenv.config();
 // middlewares
 app.use(express.json());
 app.use(cors());
