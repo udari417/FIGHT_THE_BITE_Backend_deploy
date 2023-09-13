@@ -1,3 +1,4 @@
+import UserModel from "../model/User.model.js";
 import VillagerModel from "../model/Vllager.model.js";
 
 export async function addVillager(req, res) {
@@ -9,7 +10,6 @@ export async function addVillager(req, res) {
             houseHoldNo,
             members
         } = req.body;
-
         // check for existing details
         let error = {};
         // let i = 0;
@@ -43,7 +43,6 @@ export async function addVillager(req, res) {
                 });
                 // return res.status(200).send({ msg: user });
 
-
                 // return save result as a response
                 user.save()
                     .then((result) =>
@@ -72,7 +71,7 @@ export async function getFammly(req, res) {
 
         try {
             let users = await VillagerModel.find({ divisionNumber });
-            return res.status(201).send(users);
+            // return res.status(201).send(users);
 
             if (!users)
                 return res
