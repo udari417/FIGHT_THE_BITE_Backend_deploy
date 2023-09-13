@@ -107,8 +107,87 @@ export async function register(req, res) {
                             role,
                             password: hashedPassword,
                         });
-                    }
+                    } else if (role === "ORG") {
+                        const {
+                            name,
+                            gsDivision,
+                            divisionNumber,
+                            boardName,
+                            boardAddress,
+                            boardPhone,
+                            boardEmail,
+                        } = req.body;
+                        user = new UserModel({
+                          name,
+                          email,
+                          gsDivision,
+                          divisionNumber,
+                          contact,
+                          boardName,
+                          boardAddress,
+                          nic,
+                          boardPhone,
+                          boardEmail,
+                          role,
+                          password: hashedPassword,
+                        });
+                    } else if (role === "PHI") {
+                        const {
+                            name,
+                            address,
+                            gsDivisions,
+                        } = req.body;
+                        user = new UserModel({
+                            name,
+                            email,
+                            contact,
+                            nic,
+                            address,
+                            gsDivisions,
+                            role,
+                            password: hashedPassword,
+                        });
+                    } else if (role === "DR") {
                         
+                        const {
+                            registrationNumber,
+                            name,
+                            wardNo,
+                            divisionNumber,
+                        } = req.body;
+                        user = new UserModel({
+                            registrationNumber,
+                            name,
+                            email,
+                            contact,
+                            wardNo,
+                            role,
+                            nic,
+                            divisionNumber,
+                            password: hashedPassword,
+                        });
+                    } else if (role === "NR") {
+                        
+                        const {
+                            registrationNumber,
+                            name,
+                            
+                        } = req.body;
+                        user = new UserModel({
+                            registrationNumber,
+                            name,
+                            email,
+                            contact,
+                            role,
+                            nic,
+                            password: hashedPassword,
+                        });
+                    }
+
+
+                    // return res.status(500).send(user);
+                        
+
                         // return save result as a response
                         user.save()
                             .then((result) =>
