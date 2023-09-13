@@ -19,6 +19,7 @@ router.route('/addfammily').post(villagerController.addVillager); // add fammily
 router.route('/user/:id').get(controller.getUser); // user with userID
 router.route('/getUser/:username').get(controller.getUser); // user with username
 router.route('/getUsers/:role').get(controller.getUsers); // users with role
+router.route('/getFammily/:gnd').get(villagerController.getFammly); // users with role
 router.route("/generateOTP").get(controller.verifyUser, localVariables, controller.generateOTP); // generate random OTP
 router.route("/verifyOTP").get(controller.verifyUser, controller.verifyOTP); // verify generated OTP
 router.route('/createResetSession').get(controller.createResetSession); // reset all the variables
