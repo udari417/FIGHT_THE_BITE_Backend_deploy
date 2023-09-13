@@ -46,6 +46,12 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     unique: [true, "Feild Exist"],
   },
+  registrationNumber: {
+    type: String,
+  },
+  wardNo: {
+    type: String,
+  },
   password: {
     type: String,
   },

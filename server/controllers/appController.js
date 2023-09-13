@@ -28,9 +28,8 @@ export async function verifyUser(req, res, next) {
   }
 */
 export async function register(req, res) {
-
+    
     const { role, password, email, contact, nic } = req.body;
-
     
     try {
         // check for existing email
@@ -92,7 +91,44 @@ export async function register(req, res) {
                           role,
                           password: hashedPassword,
                         });
+                    }else if (role === "DR") {
+                        
+                        const {
+                            registrationNumber,
+                            name,
+                            wardNo,
+                            divisionNumber,
+                        } = req.body;
+                        user = new UserModel({
+                            registrationNumber,
+                            name,
+                            email,
+                            contact,
+                            wardNo,
+                            role,
+                            nic,
+                            divisionNumber,
+                            password: hashedPassword,
+                        });
+                    }else if (role === "NR") {
+                        
+                        const {
+                            registrationNumber,
+                            name,
+                            
+                        } = req.body;
+                        user = new UserModel({
+                            registrationNumber,
+                            name,
+                            email,
+                            contact,
+                            role,
+                            nic,
+                            password: hashedPassword,
+                        });
                     }
+
+
                     // return res.status(500).send(user);
                         
 
