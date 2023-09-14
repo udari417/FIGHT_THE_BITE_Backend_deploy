@@ -30,6 +30,7 @@ export const UserSchema = new mongoose.Schema({
   gsDivision: {
     type: String,
   },
+  gsDivisions: [],
   divisionNumber: {
     type: String,
   },
@@ -44,14 +45,11 @@ export const UserSchema = new mongoose.Schema({
   },
   boardEmail: {
     type: String,
-    // unique: [true, "Feild Exist"],
+    unique: [true, "Feild Exist"],
   },
   password: {
     type: String,
   },
-  image : {
-    type : String,    
-  }
 });
 
-export default mongoose.model.Users || mongoose.model('User', UserSchema);
+export default mongoose.model.Users || mongoose.model('User', UserSchema);

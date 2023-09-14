@@ -29,6 +29,7 @@ router.route('/organization/campaigns').post(organizationcontroller.getOrganizat
 router.route('/patient/addpatient').post(patientcontroller.addPatients);
 router.route('/patient/getPatientcount').post(patientcontroller.getCountPatients);
 router.route('/phi/getdivition').post(phicontroller.getDivisions);
+router.route('/getVillages/:nic').post(villagerController.getVillagers)
 // router.route('/validatenic').post(ValidateNIC);
 
 // ========= GET Methods ==============

@@ -50,3 +50,38 @@ export async function addVillager(req, res) {
     return res.status(500).send({ error: "aiyooo" });
   }
 }
+
+export async function getVillagers(req, res) {
+  let nic = req.params.nic;
+  try {
+      try {
+          let users = await VillagerModel.find({
+              members: {
+                  $elemMatch: {
+                      nic ,
+                  },
+              },
+          });
+
+          if (!users) {
+              return res.status(501).send({ error: "Cannot find user data" });
+          } else {
+              let members = users[0].members;
+              let i = 0;
+              while (members[i]) {
+                  let nicx = members[i].nic ? members[i].nic : "";
+                  if (nicx === nic) {
+                      return res.status(201).send(members[i]);
+                  }
+                  i++;
+              }
+              return res.status(201).send({error: "Cannot find NIC"});
+          }
+
+      } catch (error) {
+          return res.status(500).send({ error: "Cannot find NIC" });
+      }
+  } catch (error) {
+      return res.status(501).send({ error: "Cannot find user data" });
+    }
+}
