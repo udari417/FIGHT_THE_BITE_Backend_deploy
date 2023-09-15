@@ -85,3 +85,20 @@ export async function getVillagers(req, res) {
       return res.status(501).send({ error: "Cannot find user data" });
     }
 }
+
+//! uploard the image function for competition
+
+export async function SaveCompetitionImage(req,res){
+  const {userId} = req.body;
+
+  try {
+    let details = await VillagerModel.findOne({_id : userId});
+
+    console.log(details);
+
+    return res.status(200).send({type : "Succes" , message : details});
+
+  } catch (error) {
+    console.log(error);
+  }
+}

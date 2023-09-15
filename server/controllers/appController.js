@@ -197,6 +197,7 @@ export async function login(req, res) {
                             token,
                             type : "success",
                             name : user.name,
+                            id : user._id,
                         });
                     })
                     .catch((error) => {
