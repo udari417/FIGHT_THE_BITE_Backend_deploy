@@ -31,6 +31,7 @@ router.route('/patient/getPatientcount').post(patientcontroller.getCountPatients
 router.route('/phi/getdivition').post(phicontroller.getDivisions);
 router.route('/getVillages/:nic').post(villagerController.getVillagers);
 router.route('/villager/uploardimage').post(villagerController.SaveCompetitionImage);
+router.route('/patient/getpatient').post(patientcontroller.getPatients);
 // router.route('/validatenic').post(ValidateNIC);
 
 // ========= GET Methods ==============

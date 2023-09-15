@@ -1,4 +1,5 @@
 import PatientModel from "../model/Patient.model.js";
+import UserModel from "../model/User.model.js";
 import axios from "axios";
 
 export async function addPatients(req, res) {
@@ -40,40 +41,75 @@ export async function addPatients(req, res) {
 
 export async function getPatients(req, res) {
 
-    const { affectedStatus , divisionNumber } = req.body;
+    var patients = [];
+    var list1 = [];
+    var i = 0;
 
-    // console.log(affectedStatus);
+    const { affectedStatus, email } = req.body;
 
-    try {
+    var details = await UserModel.findOne({ email });
 
-        const patients = await PatientModel.find({ affectedStatus , divisionNumber });
-        
-        console.log(patients);
-        if (patients) {
-            res.status(201).json({ type: "success", message: patients });
-        }else{
-            res.status(404).json({type : "error" , message : "not found patients"});
+    // console.log(details.gsDivisions);
+    var divitions = details.gsDivisions;
+
+    divitions.forEach(async (element) => {
+        console.log(element);
+        const patient = await PatientModel.find({ affectedStatus, divisionNumber : element });
+        // console.log(patient)
+        // patients.concat(patient)
+        patients.push(patient)
+
+        console.log(patient)
+        // if (i == 0) {
+        // patients = patient.slice();
+        // }else{
+        // patients.push(patient);
+        // patients.push(patients)
+        // console.log(patients)
+        // console.log(p)
+        // }
+        i++;
+        console.log(i);
+        // console.log(patients);
+        if (divitions.length === i) {
+            // console.log("Called")
+            return res.status(200).json({ patientsList: patients });
         }
-    } catch (error) {
-        console.log(error);
-    }
+    });
+    // console.log(patients)
+
+
+
+    // try {
+
+    //     const patients = await PatientModel.find({ affectedStatus , divisionNumber });
+
+    //     console.log(patients);
+    //     if (patients) {
+    //         res.status(201).json({ type: "success", message: patients });
+    //     }else{
+    //         res.status(404).json({type : "error" , message : "not found patients"});
+    //     }
+    // } catch (error) {
+    //     console.log(error);
+    // }
 }
 
 export async function getCountPatients(req, res) {
 
-    const { affectedStatus , divisionNumber } = req.body;
+    const { affectedStatus, divisionNumber } = req.body;
 
     // console.log(affectedStatus);
 
     try {
 
-        const patients = await PatientModel.getCount({ affectedStatus , divisionNumber });
-        
+        const patients = await PatientModel.getCount({ affectedStatus, divisionNumber });
+
         console.log(patients);
         if (patients) {
             res.status(201).json({ type: "success", message: patients });
-        }else{
-            res.status(404).json({type : "error" , message : "not found patients"});
+        } else {
+            res.status(404).json({ type: "error", message: "not found patients" });
         }
     } catch (error) {
         console.log(error);
