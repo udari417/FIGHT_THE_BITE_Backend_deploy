@@ -66,10 +66,11 @@ export async function createcampaign (req,res){
 
 }
 
-const getorganization = async(req,res) => {
-  const {email} = req.body
-  console.log(email);
-  const existuser = await organizations.findOne({email})
+export async function getOrganization(req,res){
+  const email = req.params.email
+  // console.log(email)
+  console.log(req.params.email);
+  const existuser = await UserModel.findOne({email})
   if(existuser){
     console.log(existuser)
     res.status(200).json({user : existuser})

@@ -30,11 +30,11 @@ export async function getDivisions(req,res){
             }
             i++;
             if (i == gsDivisons.length) {
-                res.json({already : alreadyaffected , newlyaffected : newlyaffected})
+                res.status(200).json({already : alreadyaffected , newlyaffected : newlyaffected});
              }
         })
        
     } catch (error) {
         console.log(error);
-    }
+    }
 }

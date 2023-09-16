@@ -50,6 +50,14 @@ export const UserSchema = new mongoose.Schema({
   password: {
     type: String,
   },
+  phase: {
+    type: String,
+  },
+  image: {
+    type: String,
+    default:
+      "https://img.freepik.com/premium-vector/red-light-sign-icon-color-vector-illustration_755164-2583.jpg?w=740",
+  },
 });
 
 export default mongoose.model.Users || mongoose.model('User', UserSchema);

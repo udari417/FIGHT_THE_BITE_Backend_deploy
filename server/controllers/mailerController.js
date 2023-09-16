@@ -1,17 +1,17 @@
 import nodemailer from "nodemailer";
 import Mailgen from "mailgen";
 
-// import ENV from "../config.js";
+import ENV from "../config.js";
 
 let mailConfig = {
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
+    service: "gmail",
+    auth: {
+        user: ENV.EMAIL,
+        pass: ENV.PASSWORD,
+    },
+    tls: {
+        rejectUnauthorized: false,
+    },
 };
 
 let transporter = nodemailer.createTransport(mailConfig);
@@ -48,11 +48,11 @@ export const registerMail = async (req, res) => {
     let emailBody = MailGenerator.generate(email);
 
     let massage = {
-      from: process.env.EMAIL,
-      to: userEmail,
-      subject: subject || "Signup Successfully",
-      html: emailBody,
-    };
+        from: ENV.EMAIL,
+        to: userEmail,
+        subject: subject || "Signup Successfully",
+        html: emailBody
+    }
 
     // send mail
     transporter.sendMail(massage).then(() => {

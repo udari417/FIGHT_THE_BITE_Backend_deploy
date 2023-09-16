@@ -1,7 +1,7 @@
 import UserModel from "../model/User.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-// import ENV from "../config.js";
+import ENV from "../config.js";
 import otpGenerator from "otp-generator";
 import VillagerModel  from "../model/Vllager.model.js";
 import GuestModel from "../model/Guest.model.js";
@@ -209,7 +209,7 @@ export async function login(req, res) {
                                 username: user.email,
                                 role: user.role,
                             },
-                            process.env.JWTSECRET,
+                            ENV.JWT_SECRET,
                             { expiresIn: "24h" }
                         );
 
@@ -219,7 +219,8 @@ export async function login(req, res) {
                             role: user.role,
                             token,
                             type : "success",
-                            name : user.name
+                            name : user.name,
+                            id : user._id
                         });
                     })
                     .catch((error) => {
@@ -355,7 +356,7 @@ export async function deleteData(req, res) {
 
 /** GET: http://localhost:4040/api/generateOTP */
 export async function generateOTP(req, res) {
-    req.app.locals.OTP =  otpGenerator.generate(6, {
+    req.app.locals.OTP = await otpGenerator.generate(6, {
         lowerCaseAlphabets: false,
         upperCaseAlphabets: false,
         specialChars: false

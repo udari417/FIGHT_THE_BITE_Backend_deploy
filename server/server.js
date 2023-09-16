@@ -4,18 +4,16 @@ import morgan from "morgan";
 
 import router from "./router/route.js";
 import connect from "./database/conn.js";
-import dotenv from "dotenv";
 
 const app = express();
 
-dotenv.config();
 // middlewares
 app.use(express.json());
 app.use(cors());
 app.use(morgan('tiny'));
 app.disable('x-powered-by');  // less hackers know about our stack
 
-const port = 5000;
+const port = 4040;
 
 // HTTP GET Request
 app.get('/', (req, res) => {
