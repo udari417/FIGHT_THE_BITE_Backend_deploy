@@ -38,3 +38,23 @@ export async function getDivisions(req,res){
         console.log(error);
     }
 }
+
+export async function addAlreadyPatient(req ,res){
+    const{userId, affectedStatus , phicomment} = req.body;
+
+    try {
+        const updatePatient = await PatientModel.findOneAndUpdate(
+            {userId : userId},
+            {affectedStatus : affectedStatus , phicomment : phicomment},
+            {new : true}
+        );
+
+        if (updatePatient) {
+            res.status(200).json({type : "Success"});
+        }else{
+            res.status(404).json({type : "User not found"});
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}

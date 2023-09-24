@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 export const CompetitionSchema = new mongoose.Schema({
+    userId : {
+        type : String,
+        required : true
+    },
     HouseHoldNo : {
         type : String,
         required : true

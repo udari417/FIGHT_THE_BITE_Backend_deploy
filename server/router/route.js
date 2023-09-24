@@ -11,6 +11,8 @@ import * as organizationcontroller from "../controllers/organizationController.j
 // import * as patientcontroller from "../controllers/patientController.js";
 import * as patientcontroller from "../controllers/patientController.js";
 import * as phicontroller from "../controllers/phiController.js";
+import * as competitionController from "../controllers/competitionController.js";
+import UserModel from "../model/User.model.js";
 // import nicValidator from "../middleware/nicValidator.js";
 // import ValidateNIC from "../middleware/nicValidator.js";
 // import * as validity from "../middleware/nicValidator.js"
@@ -32,6 +34,9 @@ router.route('/phi/getdivition').post(phicontroller.getDivisions);
 router.route('/getVillages/:nic').post(villagerController.getVillagers);
 router.route('/villager/uploardimage').post(villagerController.SaveCompetitionImage);
 router.route('/patient/getpatient').post(patientcontroller.getPatients);
+router.route('/phi/addtoalready').post(phicontroller.addAlreadyPatient);
+router.route('/user/uploardimages').post(competitionController.uploadImage);
+router.route('/villager/getuserdetails').post(villagerController.getVilagerDetails);
 // router.route('/validatenic').post(ValidateNIC);
 
 // ========= GET Methods ==============
