@@ -5,6 +5,7 @@ import ENV from "../config.js";
 import otpGenerator from "otp-generator";
 import VillagerModel  from "../model/Vllager.model.js";
 import GuestModel from "../model/Guest.model.js";
+import OtpModel from "../model/Otp.model.js";
 
 /** middleware for verify user */
 export async function verifyUser(req, res, next) {
@@ -221,6 +222,7 @@ export async function login(req, res) {
                             type : "success",
                             name : user.name,
                             id : user._id
+                            // id : user._id,
                         });
                     })
                     .catch((error) => {
@@ -511,35 +513,66 @@ export async function generateOTPMobile(req, res) {
 };
 
 export async function verifyotpMobile (req, res) {
-  const { email, otp } = req.body;
+    // console.log(req.body);
+  const { email, otp , nic } = req.body;
   // console.log(req.email.email)
-  if (req.email.email === email) {
-    const uservalidation = await OTP.find({ email });
-    // console.log(email)
-    if (uservalidation.length > 0) {
-      var uservalidations = await uservalidation[uservalidation.length - 1];
-      console.log(uservalidations.otp);
-      if (bcrypt.compareSync(otp, uservalidations.otp)) {
-        //  console.log(uservalidations);
-        uservalidations.verified = true;
-        // console.log(uservalidations.token);
-        // console.log(req.headers.authorization.split(" ")[1]);
-        // const token = req.headers.authorization.split(" ")[1];
-        // console.log(token === uservalidations.token)
-        uservalidations.save();
-        // console.log(uservalidation);
-        res.json({ type: "success", message: "OTP Verified" });
+  if(email != null){
+    if (req.value.email === email) {
+        const uservalidation = await OtpModel.find({ email });
+        // console.log(email)
+        if (uservalidation.length > 0) {
+        var uservalidations =  uservalidation[uservalidation.length - 1];
+        console.log(uservalidations.otp);
+        if (bcrypt.compareSync(otp, uservalidations.otp)) {
+            //  console.log(uservalidations);
+            uservalidations.verified = true;
+            // console.log(uservalidations.token);
+            // console.log(req.headers.authorization.split(" ")[1]);
+            // const token = req.headers.authorization.split(" ")[1];
+            // console.log(token === uservalidations.token)
+            uservalidations.save();
+            // console.log(uservalidation);
+            res.json({ type: "success", message: "OTP Verified" });
+        } else {
+            // console.log('hi');
+            res.json({ type: "error", message: "Invalid OTP" });
+        }
+        } else {
+        // console.log("hello");
+        res.json({ type: "error", message: "Invalid User" });
+        }
+    }  
+  } if(nic != null){
+    if (req.value.nic === nic) {
+      // console.log("Hi")
+      const uservalidation = await OtpModel.find({ nic });
+      // console.log(email)
+      if (uservalidation.length > 0) {
+        var uservalidations = uservalidation[uservalidation.length - 1];
+        console.log(uservalidations.otp);
+        if (bcrypt.compareSync(otp, uservalidations.otp)) {
+          //  console.log(uservalidations);
+          uservalidations.verified = true;
+          // console.log(uservalidations.token);
+          // console.log(req.headers.authorization.split(" ")[1]);
+          // const token = req.headers.authorization.split(" ")[1];
+          // console.log(token === uservalidations.token)
+          uservalidations.save();
+          // console.log(uservalidation);
+          res.json({ type: "success", message: "OTP Verified" });
+        } else {
+          // console.log('hi');
+          res.json({ type: "error", message: "Invalid OTP" });
+        }
       } else {
-        // console.log('hi');
-        res.json({ type: "error", message: "Invalid OTP" });
+        // console.log("hello");
+        res.json({ type: "error", message: "Invalid User" });
       }
     } else {
-      // console.log("hello");
       res.json({ type: "error", message: "Invalid User" });
     }
-  } else {
-    res.json({ type: "error", message: "Invalid User" });
   }
+  
 };
 
 

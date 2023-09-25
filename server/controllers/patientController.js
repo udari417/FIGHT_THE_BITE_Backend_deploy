@@ -4,7 +4,7 @@ import axios from "axios";
 
 export async function addPatients(req, res) {
     // PatientModel.find({"hic" : "hiv"});
-    const { address, wardId, phase, userId, affectedStatus, confirmDoctor, affectivityConfirmDate, divisionNumber } = req.body;
+    const {name, address, wardId, phase, userId, affectedStatus, confirmDoctor, affectivityConfirmDate, divisionNumber,houseHoldNo } = req.body;
 
     const time = await axios.get("http://worldtimeapi.org/api/timezone/Asia/Colombo");
     const newtime = await time.data.datetime;
@@ -13,6 +13,7 @@ export async function addPatients(req, res) {
     try {
 
         const patient = await new PatientModel({
+            name : name,
             address: address,
             wardId: wardId,
             phase: phase,
@@ -20,6 +21,7 @@ export async function addPatients(req, res) {
             affectedStatus: affectedStatus,
             confirmDoctor: confirmDoctor,
             affectivityConfirmDate: newtime,
+            houseHoldNo : houseHoldNo,
             divisionNumber: divisionNumber,
             createdAt: newtime,
             updatedAt: newtime,
@@ -59,7 +61,7 @@ export async function getPatients(req, res) {
         // patients.concat(patient)
         patients.push(patient)
 
-        console.log(patient)
+        // console.log(patient)
         // if (i == 0) {
         // patients = patient.slice();
         // }else{
@@ -70,10 +72,11 @@ export async function getPatients(req, res) {
         // }
         i++;
         console.log(i);
+        
         // console.log(patients);
         if (divitions.length === i) {
             // console.log("Called")
-            return res.status(200).json({ patientsList: patients });
+            return res.status(200).json({ patientsList: patients  });
         }
     });
     // console.log(patients)

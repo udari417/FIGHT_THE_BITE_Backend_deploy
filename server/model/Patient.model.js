@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 export const PatientSchema = new mongoose.Schema({
+    name : {
+        type : String,
+        requied : true,
+    },
     address : {
         type : String,
         requied : true,
@@ -37,9 +41,16 @@ export const PatientSchema = new mongoose.Schema({
         type : String,
         required : true
     },
+    houseHoldNo : {
+        type : String,
+        requied : true
+    },
     divisionNumber : {
         type : String,
         required : true
+    },
+    phicomment : {
+        type : String
     }
 });
 

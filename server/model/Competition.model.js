@@ -1,21 +1,23 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 export const CompetitionSchema = new mongoose.Schema({
-    villagerId : {
-        type : mongoose.Types.ObjectId,
-        required : true,
-        ref : villagers,
+    userId : {
+        type : String,
+        required : true
+    },
+    HouseHoldNo : {
+        type : String,
+        required : true
     },
     divisionNumber : {
         type : String,
         required : true
     },
     images : [],
-    uploadedAt : {
-        type : String,
-        required : true
+    marks : {
+        type : Number,
     },
-    updatedAt : {
+    uploadedAt : {
         type : String,
         required : true
     },
