@@ -24,10 +24,10 @@ export async function villagerregister(req,res){
       email,
       divisionNumber,
       gsDivision,
-      hashedpassword,
+      password : hashedpassword,
       name,
       contact,
-      role : "villager"
+      role : "Villager"
     })
 
     await newuser.save();
@@ -156,8 +156,8 @@ export async function getVillagers(req, res) {
   let nic = req.params.nic;
   // const 
   console.log(nic);
-  try {
-    try {
+  // try {
+    // try {
       const existuser = await UserModel.findOne({ nic });
       if(!existuser){
       
@@ -232,13 +232,13 @@ export async function getVillagers(req, res) {
                 expiresIn: "15m",
               });
               console.log(token)
-              // const response = await smssender(
-              //   mobile,
-              //   message
-              // );
-              const response = 200;
+              const response = await smssender(
+                mobile,
+                message
+              );
+             
               // console.log(response)
-              if (response === 200) {
+              if (response.status === 200) {
                 const hashedotp = await bcrypt.hash(otp, 15);
                 console.log(hashedotp)
                 const otps = new OtpModel({
@@ -249,7 +249,7 @@ export async function getVillagers(req, res) {
                 });
                 await otps.save();
                 console.log(otps);
-                console.log(villagerdetails)
+                // console.log(villagerdetails)
                 return res
                   .status(200)
                   .json({gsdivision: gsDivision,divisionnumber: divisionNumber,houseHoldno: householdno,address: address,contact: mobile,message: members[i], type: "success", token });
@@ -271,14 +271,14 @@ export async function getVillagers(req, res) {
     }else{
       return res.status(404).json({type : "error" , message : "User Already Exists"})
     }
-    } catch (error) {
-      return res
-        .status(500)
-        .send({ message: "Cannot find NIC", type: "error" });
-    }
-  } catch (error) {
-    return res
-      .status(501)
-      .send({ type: "error", message: "We Cannot find any User" });
-  }
-}
+    // } catch (error) {
+    //   return res
+    //     .status(500)
+    //     .send({ message: "Cannot find NIC", type: "error" });
+    // }
+  } 
+  // } catch (error) {
+  //   return res
+  //     .status(501)
+  //     .send({ type: "error", message: "We Cannot find any User" });
+  // }
