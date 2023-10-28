@@ -8,7 +8,58 @@ import ENV from "../config.js";
 // import mailerController from "../controllers/mailerController.js";
 // import smssender from "../controllers/mailerController.js";
 import OtpModel from "../model/Otp.model.js";
+// import { smssender } from "../controllers/mailerController.js";
 import { smssender } from "../controllers/mailerController.js";
+
+
+export async function villagerregister(req,res){
+  const{email,password,divisionNumber,gsDivision,nic,name,contact} = req.body
+  
+  const existuser = await UserModel.findOne({email});
+  // console.log(existuser)
+  if(!existuser){
+    const hashedpassword =  bcrypt.hashSync(password,10)
+    const newuser = await new UserModel({
+      nic,
+      email,
+      divisionNumber,
+      gsDivision,
+      hashedpassword,
+      name,
+      contact,
+      role : "villager"
+    })
+
+    await newuser.save();
+    const message =
+      "Dear " +
+      name.toUpperCase() +
+      ",\\n" +
+      "Your Have Successfully Registered as a Villager in our System." +
+      "\\n" +
+      "Your Registered Details"+ "\\n" +
+      "Name: " + name +
+      "\\n"+
+      "NIC: " + nic +
+      "\\n"+
+      "E-mail: "+ email +
+      "\\n"+
+      "Contact: " + contact +
+      "\\n"+
+      "Division Number: " + divisionNumber +
+      "\\n"+
+      "Division Name: " + gsDivision +
+      "\\n"+
+      "Thank You"+
+      "\\n"+
+      "Fight The Bites Team";
+    await smssender(contact,message)
+    return res.status(201).json({type : "success", message : "User Registered Succesfully"})
+  }else{
+    return res.status(404).json({type : "error" , message : "Email Already Exists"})
+  }
+}
+
 
 export async function addVillager(req, res) {
   try {
@@ -96,10 +147,21 @@ export async function getVilagerDetails(req,res){
 }
 
 export async function getVillagers(req, res) {
+  // const villagerdetails = new Map();
+  var gsDivision;
+  var divisionNumber;
+  var householdno;
+  var address;
+  var contact;
   let nic = req.params.nic;
+  // const 
   console.log(nic);
   try {
     try {
+      const existuser = await UserModel.findOne({ nic });
+      if(!existuser){
+      
+      
       let users = await VillagerModel.find({
         members: {
           $elemMatch: {
@@ -107,11 +169,20 @@ export async function getVillagers(req, res) {
           },
         },
       });
+      console.log(users);
       // console.log(users)
-      users.forEach((element) => {
-        console.log(element.members);
-      });
+      await users.forEach((element) =>  {
+        householdno = element.houseHoldNo;
+        gsDivision = element.gsDivision;
+        divisionNumber = element.divisionNumber;
+        address = element.address;
 
+        // villagerdetails.set('gsdivision',element.gsDivision);
+        // villagerdetails.set('divisionnumber',element.divisionNumber);
+        // villagerdetails.set('householdno',element.houseHoldNo);
+        // return villagerdetails;
+      });
+      // console.log(villagerdetails);
       if (!users) {
         res
           .status(404)
@@ -161,12 +232,13 @@ export async function getVillagers(req, res) {
                 expiresIn: "15m",
               });
               console.log(token)
-              const response = await smssender(
-                mobile,
-                message
-              );
+              // const response = await smssender(
+              //   mobile,
+              //   message
+              // );
+              const response = 200;
               // console.log(response)
-              if (response.status === 200) {
+              if (response === 200) {
                 const hashedotp = await bcrypt.hash(otp, 15);
                 console.log(hashedotp)
                 const otps = new OtpModel({
@@ -177,9 +249,10 @@ export async function getVillagers(req, res) {
                 });
                 await otps.save();
                 console.log(otps);
+                console.log(villagerdetails)
                 return res
                   .status(200)
-                  .json({ message: members[i], type: "success", token });
+                  .json({gsdivision: gsDivision,divisionnumber: divisionNumber,houseHoldno: householdno,address: address,contact: mobile,message: members[i], type: "success", token });
               }
             }
 
@@ -195,6 +268,9 @@ export async function getVillagers(req, res) {
           .status(201)
           .send({ message: "Cannot find NIC", type: "error" });
       }
+    }else{
+      return res.status(404).json({type : "error" , message : "User Already Exists"})
+    }
     } catch (error) {
       return res
         .status(500)

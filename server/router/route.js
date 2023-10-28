@@ -43,6 +43,7 @@ router.route('/phi/addtoalready').post(phicontroller.addAlreadyPatient);
 router.route('/user/uploardimages').post(competitionController.uploadImage);
 router.route('/villager/getuserdetails').post(villagerController.getVilagerDetails);
 router.route("/verifyotpmobile").post(authcontroller.default, controller.verifyotpMobile);
+router.route("/villager/register").post(villagerController.villagerregister);
 // router.route('/validatenic').post(ValidateNIC);
 
 router.route("/getVillages/:nic").get(villagerController.getVillagers);
