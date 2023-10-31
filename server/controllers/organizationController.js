@@ -13,7 +13,7 @@ import CampaignModel from "../model/Campaign.model.js";
 // const { default: UserModel } = require("../model/User.model")
 
 export async function createcampaign (req,res){
-    const{name,date,location,report,sponsorshipamount,organizationid,campaigntime} = req.body
+    const{name,date,location,report,sponsorshipamount,organizationid,campaigntime,orgname,contact} = req.body
     console.log(req.body)
     // try {
         // const time = await settime()
@@ -24,7 +24,9 @@ export async function createcampaign (req,res){
         const details = await UserModel.findOne({_id : organizationid})
         const time = await axios.get("http://worldtimeapi.org/api/timezone/Asia/Colombo");
         const newtime = await time.data.datetime 
-        console.log(details);
+        // console.log(details);
+        var data = time.data.datetime.split("T");
+        // console.log(data[0]);
         // console.log(details.division)
         if(details){
         if(!details.gsDivision){
@@ -44,9 +46,11 @@ export async function createcampaign (req,res){
           time : campaigntime,
           location: location,
           organizationid: organizationid,
-          createdAt: newtime,
-          updatedAt: newtime,
+          createdAt: data[0],
+          updatedAt: data[0],
           divisionNumber : details.divisionNumber,
+          orgname : orgname,
+          contact : contact,
         });
 
         const campaign = await camp.save();
