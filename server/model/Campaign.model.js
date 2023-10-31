@@ -5,8 +5,12 @@ export const CampaignSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  orgname : {
+    type : String,
+    required : true,
+  },
   date: {
-    type: Date,
+    type: String,
     required: true,
   },
   time: {
@@ -35,6 +39,10 @@ export const CampaignSchema = new mongoose.Schema({
     type : Number,
     required : true,
     default : 0,
+  },
+  contact : {
+    type : String,
+    required : true,
   }
 });
 

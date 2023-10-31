@@ -46,6 +46,7 @@ router.route("/verifyotpmobile").post(authcontroller.default, controller.verifyo
 router.route("/villager/register").post(villagerController.villagerregister);
 router.route('/villager/getfamilymembers').post(villagerController.getfamilymembers);
 router.route('/villager/informaffectivity').post(villagerController.informaffectivity);
+router.route('/villager/getcampaigns').post(villagerController.getdivisioncampaigns)
 // router.route('/validatenic').post(ValidateNIC);
 
 router.route("/getVillages/:nic").get(villagerController.getVillagers);

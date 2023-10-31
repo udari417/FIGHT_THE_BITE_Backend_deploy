@@ -12,6 +12,7 @@ import OtpModel from "../model/Otp.model.js";
 import { smssender } from "../controllers/mailerController.js";
 import PatientModel from "../model/Patient.model.js";
 import axios from "axios";
+import CampaignModel from "../model/Campaign.model.js";
 
 
 export async function villagerregister(req,res){
@@ -318,7 +319,8 @@ export async function getVillagers(req, res) {
     console.log(req.body);
 
     const time = await axios.get("http://worldtimeapi.org/api/timezone/Asia/Colombo");
-    // console.log(time)
+    // console.log(time.data.datetime)
+    
 
     const newpatient = await new PatientModel({
       name,
@@ -358,6 +360,10 @@ export async function getVillagers(req, res) {
     
   }
 
-  // export async function getdivisioncampaigns(req,res) {
-  //   const{}
-  // }
+  export async function getdivisioncampaigns(req,res) {
+    const{divisionNumber} = req.body;
+    console.log(divisionNumber)
+    const campaigns = await CampaignModel.find({divisionNumber})
+    // console.log(campaigns);
+    return res.status(200).json({type : 'success' , message : campaigns});
+  }
