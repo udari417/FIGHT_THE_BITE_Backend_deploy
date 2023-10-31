@@ -5,7 +5,8 @@ import ENV from "../config.js";
 import otpGenerator from "otp-generator";
 import VillagerModel  from "../model/Vllager.model.js";
 import GuestModel from "../model/Guest.model.js";
-import OtpModel from "../model/Otp.model.js";
+import OtpModel, { OTP } from "../model/Otp.model.js";
+import otpgenerate from "otp-generator";
 
 /** middleware for verify user */
 export async function verifyUser(req, res, next) {
@@ -460,8 +461,8 @@ export async function resetPassword(req, res) {
 export async function generateOTPMobile(req, res) {
   try {
     const { email } = req.body;
-    console.log(email);
-    const existuser = await user.findOne({ email });
+    // console.log(req.body);
+    const existuser = await UserModel.findOne({ email });
     console.log(existuser);
     if (existuser) {
       console.log("User Exist");
@@ -469,7 +470,7 @@ export async function generateOTPMobile(req, res) {
         expiresIn: "15m",
       });
       console.log(token);
-      console.log(token);
+    //   console.log(token);
       var generateotp = otpgenerate.generate(4, {
         digits: true,
         lowerCaseAlphabets: false,

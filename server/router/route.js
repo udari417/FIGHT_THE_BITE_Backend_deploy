@@ -15,6 +15,8 @@ import * as phicontroller from "../controllers/phiController.js";
 import * as nursecontroller from "../controllers/nurseController.js"
 import * as competitionController from "../controllers/competitionController.js";
 import * as authcontroller from "../middleware/Auth.js"
+import * as appcontroller from "../controllers/appController.js";
+import * as guestVillagerController from "../controllers/guestVillagerController.js";
 // import UserModel from "../model/User.model.js";
 // import nicValidator from "../middleware/nicValidator.js";
 // import ValidateNIC from "../middleware/nicValidator.js";
@@ -47,6 +49,8 @@ router.route("/villager/register").post(villagerController.villagerregister);
 router.route('/villager/getfamilymembers').post(villagerController.getfamilymembers);
 router.route('/villager/informaffectivity').post(villagerController.informaffectivity);
 router.route('/villager/getcampaigns').post(villagerController.getdivisioncampaigns)
+router.route('/user/sendotpmobile').post(appcontroller.generateOTPMobile);
+router.route('/guest/register').post(guestVillagerController.GuestRegister)
 // router.route('/validatenic').post(ValidateNIC);
 
 router.route("/getVillages/:nic").get(villagerController.getVillagers);
