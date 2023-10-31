@@ -7,31 +7,26 @@ export const PatientSchema = new mongoose.Schema({
     },
     address : {
         type : String,
-        requied : true,
     },
     wardId : {
         type : String,
-        required : true
     },
     phase : {
         type : Number,
-        required : true
     },
     userId : {
         type : String,
-        required : true
     },
     affectedStatus : {
         type : Number,
         required : true,
+        default : 0
     },
     confirmDoctor : {
         type : String,
-        required : true
     },
     affectivityConfirmDate : {
         type : String,
-        required : true
     },
     createdAt : {
         type : String,
@@ -51,7 +46,11 @@ export const PatientSchema = new mongoose.Schema({
     },
     phicomment : {
         type : String
-    }
+    },
+    nic : {
+        type : String
+    },
+    symptoms : []
 });
 
 export default mongoose.model.patients || mongoose.model("patients",PatientSchema);

@@ -10,6 +10,8 @@ import ENV from "../config.js";
 import OtpModel from "../model/Otp.model.js";
 // import { smssender } from "../controllers/mailerController.js";
 import { smssender } from "../controllers/mailerController.js";
+import PatientModel from "../model/Patient.model.js";
+import axios from "axios";
 
 
 export async function villagerregister(req,res){
@@ -27,7 +29,8 @@ export async function villagerregister(req,res){
       password : hashedpassword,
       name,
       contact,
-      role : "Villager"
+      role : "Villager",
+      houseHoldNo : "ASD12"
     })
 
     await newuser.save();
@@ -253,6 +256,8 @@ export async function getVillagers(req, res) {
                 return res
                   .status(200)
                   .json({gsdivision: gsDivision,divisionnumber: divisionNumber,houseHoldno: householdno,address: address,contact: mobile,message: members[i], type: "success", token });
+              }else{
+                console.log("There is an error.")
               }
             }
 
@@ -281,4 +286,78 @@ export async function getVillagers(req, res) {
   //   return res
   //     .status(501)
   //     .send({ type: "error", message: "We Cannot find any User" });
+  // }
+
+  export async function getfamilymembers(req,res){
+    const familymembers = [];
+    const{houseHoldNo} = req.body;
+    console.log(req.body);
+    const existfamily = await VillagerModel.findOne({houseHoldNo})
+    // const existpatients = await PatientModel.findOne({})
+    var i = 0;
+    if(existfamily){
+      for(const element of existfamily.members){
+        const existpatient = await PatientModel.findOne({nic : element.nic , affectedStatus : 0})
+        if(!existpatient){
+          familymembers.push(element)
+        }
+        i++;
+        if (i === existfamily.members.length) {
+          return res.json({type : "success" , message : familymembers})
+        }
+      }
+
+      
+    }else{
+      return res.status(404).json({type : "error" , message : "No Family Found With this House Hold Number"})
+    }
+  }
+
+  export async function informaffectivity(req,res){
+    const{name,houseHoldNo,divisionNumber,nic,symptoms,contact} = req.body
+    console.log(req.body);
+
+    const time = await axios.get("http://worldtimeapi.org/api/timezone/Asia/Colombo");
+    // console.log(time)
+
+    const newpatient = await new PatientModel({
+      name,
+      houseHoldNo,
+      divisionNumber,
+      nic,
+      createdAt: time.data.datetime,
+      updatedAt: time.data.datetime,
+      symptoms,
+    });
+    var message =
+      "Dear " +
+      name.toUpperCase() +
+      ",\\n" +
+      "\\n" +
+      "We informed about Your Symptoms to our Doctor. He will check your Symptoms and send you an invitation for a meeting within 2 hours." +
+      "\\n" +
+      "We have noticed that you have below mentioned Symptoms" +
+      "\\n" +
+      "\\n";
+      for(let i=0 ; i<symptoms.length;i++) {
+        message += "\\t"+"\\t"+"\\t"+ (i+1)+". " + symptoms[i] + "\\n";
+      }   
+      message += "\\n";
+      message += "We wish you a Healthy Life" + "\\n" + "\\n";
+      message += "Thank You." +
+      "\\n" +
+      "\\n" +
+      "Fight The Bites Team";
+    const mobile = "94" + contact.slice(1);
+    await smssender(mobile,message)
+    const savedpatient = await newpatient.save()
+    if(savedpatient){
+      return res.status(201).json({type : "success" , message : "We informed Your Symptoms to our Doctor Successfully. He will contact you within 2 hours."})
+    }
+    // await smssender()
+    
+  }
+
+  // export async function getdivisioncampaigns(req,res) {
+  //   const{}
   // }

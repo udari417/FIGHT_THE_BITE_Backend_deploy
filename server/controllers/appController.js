@@ -262,7 +262,8 @@ export async function login(req, res) {
                             token,
                             type : "success",
                             name : user.name,
-                            id : user._id
+                            id : user._id,
+                            user
                             // id : user._id,
                         });
                     })

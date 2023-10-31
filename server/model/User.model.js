@@ -53,6 +53,10 @@ export const UserSchema = new mongoose.Schema({
   phase: {
     type: String,
   },
+  houseHoldNo: {
+    type: String,
+    required : true
+  },
   image: {
     type: String,
     default:
