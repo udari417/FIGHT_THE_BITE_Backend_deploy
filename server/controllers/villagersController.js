@@ -1,5 +1,6 @@
 import UserModel from "../model/User.model.js";
 import VillagerModel from "../model/Vllager.model.js";
+import GuestModel from "../model/Guest.model.js";
 
 export async function addVillager(req, res) {
     try {
@@ -58,7 +59,7 @@ export async function addVillager(req, res) {
             
         }
     } catch (error) {
-        return res.status(500).send({error: "aiyooo"});
+        return res.status(500).send({error});
     }
 }
 
@@ -70,7 +71,9 @@ export async function getFammly(req, res) {
         if (!divisionNumber) return res.status(404).send({ error: "Invalid URL" });
 
         try {
-            let users = await VillagerModel.find({ divisionNumber });
+            let users1 = await VillagerModel.find({ divisionNumber });
+            let users2 = await GuestModel.find({ divisionNumber, status: 1 });
+            let users = users1.concat(users2);
             // return res.status(201).send(users);
 
             if (!users)
