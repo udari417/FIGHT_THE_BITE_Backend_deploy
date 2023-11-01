@@ -7,16 +7,16 @@ export const PatientSchema = new mongoose.Schema({
     },
     address : {
         type : String,
-    },
+            },
     wardId : {
         type : String,
-    },
+            },
     phase : {
         type : Number,
-    },
+            },
     userId : {
         type : String,
-    },
+            },
     affectedStatus : {
         type : Number,
         required : true,
@@ -27,7 +27,7 @@ export const PatientSchema = new mongoose.Schema({
     },
     affectivityConfirmDate : {
         type : String,
-    },
+            },
     createdAt : {
         type : String,
         required : true

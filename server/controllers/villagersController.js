@@ -257,7 +257,7 @@ export async function getVillagers(req, res) {
                 return res
                   .status(200)
                   .json({gsdivision: gsDivision,divisionnumber: divisionNumber,houseHoldno: householdno,address: address,contact: mobile,message: members[i], type: "success", token });
-              }else{
+}else{
                 console.log("There is an error.")
               }
             }
@@ -290,11 +290,11 @@ export async function getVillagers(req, res) {
   // }
 
   export async function getfamilymembers(req,res){
-    const familymembers = [];
+const familymembers = [];
     const{houseHoldNo} = req.body;
     console.log(req.body);
     const existfamily = await VillagerModel.findOne({houseHoldNo})
-    // const existpatients = await PatientModel.findOne({})
+// const existpatients = await PatientModel.findOne({})
     var i = 0;
     if(existfamily){
       for(const element of existfamily.members){
@@ -305,7 +305,7 @@ export async function getVillagers(req, res) {
         i++;
         if (i === existfamily.members.length) {
           return res.json({type : "success" , message : familymembers})
-        }
+}
       }
 
       

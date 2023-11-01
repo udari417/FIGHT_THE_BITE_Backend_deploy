@@ -470,7 +470,7 @@ export async function generateOTPMobile(req, res) {
         expiresIn: "15m",
       });
       console.log(token);
-    //   console.log(token);
+      //   console.log(token);
       var generateotp = otpgenerate.generate(4, {
         digits: true,
         lowerCaseAlphabets: false,

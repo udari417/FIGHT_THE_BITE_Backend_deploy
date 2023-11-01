@@ -5,7 +5,7 @@ export const CampaignSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  orgname : {
+orgname : {
     type : String,
     required : true,
   },
@@ -39,7 +39,7 @@ export const CampaignSchema = new mongoose.Schema({
     type : Number,
     required : true,
     default : 0,
-  },
+},
   contact : {
     type : String,
     required : true,

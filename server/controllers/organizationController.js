@@ -25,7 +25,7 @@ export async function createcampaign (req,res){
         const time = await axios.get("http://worldtimeapi.org/api/timezone/Asia/Colombo");
         const newtime = await time.data.datetime 
         // console.log(details);
-        var data = time.data.datetime.split("T");
+var data = time.data.datetime.split("T");
         // console.log(data[0]);
         // console.log(details.division)
         if(details){
@@ -49,7 +49,7 @@ export async function createcampaign (req,res){
           createdAt: data[0],
           updatedAt: data[0],
           divisionNumber : details.divisionNumber,
-          orgname : orgname,
+orgname : orgname,
           contact : contact,
         });
 

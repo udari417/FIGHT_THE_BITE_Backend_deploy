@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import UserModel from "../model/User.model.js";
 
 export async function GuestRegister(req,res){
-    const{email,address,password,contact,GuestVillager,members,newgsDivision,oldgsDivision,newdivisionnumber} = req.body;
+    const{houseHoldNo,email,address,password,contact,GuestVillager,members,newgsDivision,oldgsDivision,newdivisionnumber} = req.body;
     const existemail = await UserModel.findOne({email})
     const existguest = await GuestModel.findOne({email})
     console.log(existemail);
@@ -20,6 +20,7 @@ export async function GuestRegister(req,res){
               password : hashedpassword,
               newdivisionnumber,
               contact,
+              houseHoldNo,
             });
             const newuser = await user.save();
             console.log(newuser);
